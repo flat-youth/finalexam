@@ -7,86 +7,86 @@
 #include <string.h>
 #include <Windows.h>
 
-//Æµ·±ÓÃµ½»ð³µ±íµÄÐÅÏ¢
+//é¢‘ç¹ç”¨åˆ°ç«è½¦è¡¨çš„ä¿¡æ¯
 #define HEADER1 "------------------------------------BOOK TICKET------------------------------------\n"
 #define HEADER2 "|   number    |start city|reach city|takeoff time|receive time|price|ticket number|\n"
 #define HEADER3 "|-------------|----------|----------|------------|------------|-----|-------------|\n"
 #define FORMAT "|%-10s   |%-10s|%-10s|%-10s  |%-10s  |%5d| %5d       |\n"
 #define DATA p->data.num,p->data.startcity,p->data.reachcity,p->data.takeofftime,p->data.receivetime,p->data.price,p->data.ticketnum
 
-//»ð³µÆ±ÐÅÏ¢
+//ç«è½¦ç¥¨ä¿¡æ¯
 struct train
 {	
-	char num[10];//ÁÐ³µºÅ
-	char startcity[10];//³ö·¢³ÇÊÐ
-	char reachcity[10];//´ïµ½³ÇÊÐ
-	char takeofftime[10];//·¢³µÊ±¼ä
-	char receivetime[10];//µ½´ïÊ±¼ä
-	int price;//Æ±¼Û
-	int ticketnum;//Æ±Êý
+	char num[10];//åˆ—è½¦å·
+	char startcity[10];//å‡ºå‘åŸŽå¸‚
+	char reachcity[10];//è¾¾åˆ°åŸŽå¸‚
+	char takeofftime[10];//å‘è½¦æ—¶é—´
+	char receivetime[10];//åˆ°è¾¾æ—¶é—´
+	int price;//ç¥¨ä»·
+	int ticketnum;//ç¥¨æ•°
 };
 
-//¶©Æ±ÈËµÄÐÅÏ¢
+//è®¢ç¥¨äººçš„ä¿¡æ¯
 struct man
 {
 	char num[10];//ID
-	char name[10];//ÐÕÃû
-	int bookNum;//¶©µÄÆ±Êý
+	char name[10];//å§“å
+	int bookNum;//è®¢çš„ç¥¨æ•°
 };
 
-//»ð³µÆ±ÐÅÏ¢Á´±íµÄ½áµã½á¹¹
+//ç«è½¦ç¥¨ä¿¡æ¯é“¾è¡¨çš„ç»“ç‚¹ç»“æž„
 typedef struct node
 {
 	struct train data;
 	struct node* next;
 }TrainNode,*TrainLink;
 
-//¶©Æ±ÈËÁ´±íµÄ½áµã½á¹¹
+//è®¢ç¥¨äººé“¾è¡¨çš„ç»“ç‚¹ç»“æž„
 typedef struct Man
 {
 	struct man data;
 	struct Man* next;
 }BookNode,*BookLink;
 
-//È«¾Ö±äÁ¿ÊÇ·ñ±£´æÐÅÏ¢
+//å…¨å±€å˜é‡æ˜¯å¦ä¿å­˜ä¿¡æ¯
 int saveflag;
 
-//º¯Êý¶¨Òå
-void menu();//²Ëµ¥ÏÔÊ¾
-void TrainInfo(TrainLink trainHeader);//Ìí¼Ó»ð³µÐÅÏ¢
-void searchtrain(TrainLink trainHeader);//²éÑ¯»ð³µÐÅÏ¢
-void printHeader();//¸ñÊ½»¯Êä³ö±íÍ·
-void printData(TrainLink trainNode);//¸ñÊ½»¯Êä³ö±íÖÐÊý¾Ý
-void SaveTrainInfo(TrainLink trainHeader);//±£´æ»ð³µÐÅÏ¢
-void SaveBookInfo(BookLink trainHeader);//±£´æÓÃ»§ÐÅÏ¢
-void Bookticket(TrainLink trainHeader, BookLink bookHeader);//¶©Æ±
-void Modify(TrainLink trainHeader);//ÐÞ¸ÄÐÅÏ¢
-void showTrain(TrainLink trainHeader);//ÏÔÊ¾ÁÐ³µÐÅÏ¢
+//å‡½æ•°å®šä¹‰
+void menu();//èœå•æ˜¾ç¤º
+void TrainInfo(TrainLink trainHeader);//æ·»åŠ ç«è½¦ä¿¡æ¯
+void searchtrain(TrainLink trainHeader);//æŸ¥è¯¢ç«è½¦ä¿¡æ¯
+void printHeader();//æ ¼å¼åŒ–è¾“å‡ºè¡¨å¤´
+void printData(TrainLink trainNode);//æ ¼å¼åŒ–è¾“å‡ºè¡¨ä¸­æ•°æ®
+void SaveTrainInfo(TrainLink trainHeader);//ä¿å­˜ç«è½¦ä¿¡æ¯
+void SaveBookInfo(BookLink trainHeader);//ä¿å­˜ç”¨æˆ·ä¿¡æ¯
+void Bookticket(TrainLink trainHeader, BookLink bookHeader);//è®¢ç¥¨
+void Modify(TrainLink trainHeader);//ä¿®æ”¹ä¿¡æ¯
+void showTrain(TrainLink trainHeader);//æ˜¾ç¤ºåˆ—è½¦ä¿¡æ¯
 //#include "header.h"
 
 /*
-	Ö÷Òª¹¦ÄÜ£º
-	°´0£¬ÍË³ö»ð³µ¶©Æ±ÏµÍ³
-	°´1£¬½øÈëÌí¼Ó»ð³µÆ±ÐÅÏ¢½çÃæ£¬ÔÚÌáÊ¾ÏÂÊäÈë»ð³µµÄ³µ´Î¡¢Æðµã¡¢ÖÕµã¡¢³ö·¢Ê±¼ä¡¢µ½´ïÊ±¼ä¡¢Æ±¼ÛºÍ¶©¹ºµÄÆ±Êý¡£
-	°´2£¬²éÑ¯»ð³µÆ±ÐÅÏ¢£¬Á½ÖÖ²éÑ¯·½Ê½£¬Ò»ÖÖ°´³µ´Î²éÑ¯£¬ÁíÒ»ÖÖ°´µ½´ïµØµã²éÑ¯¡£
-	°´3£¬½øÈë¶©Æ±ÏµÍ³£¬¸ù¾Ýµ½µ×µØµã²éÑ¯ÂòÆ±¡£
-	°´4£¬½øÈëÐÞ¸Ä»ð³µÆ±½çÃæ£¬¸ù¾ÝÌáÊ¾ÐÞ¸Ä»ð³µÆ±ÐÅÏ¢¡£
-	°´5£¬Õ¹Ê¾ËùÓÐµÄ»ð³µÆ±¡£
-	°´6£¬»ð³µÆ±ÐÅÏ¢ºÍ¶©Æ±ÈËÐÅÏ¢µÄ±£´æ¡£
+	ä¸»è¦åŠŸèƒ½ï¼š
+	æŒ‰0ï¼Œé€€å‡ºç«è½¦è®¢ç¥¨ç³»ç»Ÿ
+	æŒ‰1ï¼Œè¿›å…¥æ·»åŠ ç«è½¦ç¥¨ä¿¡æ¯ç•Œé¢ï¼Œåœ¨æç¤ºä¸‹è¾“å…¥ç«è½¦çš„è½¦æ¬¡ã€èµ·ç‚¹ã€ç»ˆç‚¹ã€å‡ºå‘æ—¶é—´ã€åˆ°è¾¾æ—¶é—´ã€ç¥¨ä»·å’Œè®¢è´­çš„ç¥¨æ•°ã€‚
+	æŒ‰2ï¼ŒæŸ¥è¯¢ç«è½¦ç¥¨ä¿¡æ¯ï¼Œä¸¤ç§æŸ¥è¯¢æ–¹å¼ï¼Œä¸€ç§æŒ‰è½¦æ¬¡æŸ¥è¯¢ï¼Œå¦ä¸€ç§æŒ‰åˆ°è¾¾åœ°ç‚¹æŸ¥è¯¢ã€‚
+	æŒ‰3ï¼Œè¿›å…¥è®¢ç¥¨ç³»ç»Ÿï¼Œæ ¹æ®åˆ°åº•åœ°ç‚¹æŸ¥è¯¢ä¹°ç¥¨ã€‚
+	æŒ‰4ï¼Œè¿›å…¥ä¿®æ”¹ç«è½¦ç¥¨ç•Œé¢ï¼Œæ ¹æ®æç¤ºä¿®æ”¹ç«è½¦ç¥¨ä¿¡æ¯ã€‚
+	æŒ‰5ï¼Œå±•ç¤ºæ‰€æœ‰çš„ç«è½¦ç¥¨ã€‚
+	æŒ‰6ï¼Œç«è½¦ç¥¨ä¿¡æ¯å’Œè®¢ç¥¨äººä¿¡æ¯çš„ä¿å­˜ã€‚
 */
 
 int main()
 {
 	FILE* fp1, * fp2;
-	TrainLink trainTemp2, trainTemp1, trainHeader;//»ð³µÐÅÏ¢ÁÙÊ±½áµã1£¬2£¬Í·½áµã
-	BookLink bookTemp2, bookTemp1, bookHeader;//Ô¤¶©ÐÅÏ¢ÁÙÊ±½áµã1£¬2£¬Í·½áµã
+	TrainLink trainTemp2, trainTemp1, trainHeader;//ç«è½¦ä¿¡æ¯ä¸´æ—¶ç»“ç‚¹1ï¼Œ2ï¼Œå¤´ç»“ç‚¹
+	BookLink bookTemp2, bookTemp1, bookHeader;//é¢„è®¢ä¿¡æ¯ä¸´æ—¶ç»“ç‚¹1ï¼Œ2ï¼Œå¤´ç»“ç‚¹
 	char ch1 = 0, ch2 = 0;
-	int sel = 0;//Ñ¡Ôñ
+	int sel = 0;//é€‰æ‹©
 
-	trainHeader = (TrainNode*)malloc(sizeof(TrainNode));//´´½¨Í·½áµã
+	trainHeader = (TrainNode*)malloc(sizeof(TrainNode));//åˆ›å»ºå¤´ç»“ç‚¹
 	if (trainHeader == NULL)
 	{
-		printf("Memory allocation error!\n");//ÄÚ´æ·ÖÅäÊ§°Ü
+		printf("Memory allocation error!\n");//å†…å­˜åˆ†é…å¤±è´¥
 		exit(1);
 	}
 	trainHeader->next = NULL;
@@ -95,13 +95,13 @@ int main()
 	bookHeader = (BookNode*)malloc(sizeof(BookNode));
 	if (bookHeader == NULL)
 	{
-		printf("Memory allocation error!\n");//ÄÚ´æ·ÖÅäÊ§°Ü
+		printf("Memory allocation error!\n");//å†…å­˜åˆ†é…å¤±è´¥
 		exit(1);
 	}
 	bookHeader->next = NULL;
 	bookTemp1 = bookHeader;
 
-	fp1 = fopen("train.txt", "ab+");//´ò¿ª´æ´¢³µÆ±ÐÅÏ¢µÄÎÄ¼þ
+	fp1 = fopen("train.txt", "ab+");//æ‰“å¼€å­˜å‚¨è½¦ç¥¨ä¿¡æ¯çš„æ–‡ä»¶
 	if (fp1 == NULL)
 	{
 		printf("can't open this file!\n");
@@ -115,7 +115,7 @@ int main()
 			printf("Memory allocation error!\n");
 			exit(1);
 		}
-		if (fread(trainTemp2, sizeof(TrainNode), 1, fp1) == 1)//´Ó´ÅÅÌÎÄ¼þ¶ÁÈ¡Êý¾Ý£¬´æÈëÁ´±íÖÐ
+		if (fread(trainTemp2, sizeof(TrainNode), 1, fp1) == 1)//ä»Žç£ç›˜æ–‡ä»¶è¯»å–æ•°æ®ï¼Œå­˜å…¥é“¾è¡¨ä¸­
 		{
 			trainTemp2->next = NULL;
 			trainTemp1->next = trainTemp2;
@@ -124,7 +124,7 @@ int main()
 	}
 	fclose(fp1);
 
-	fp2 = fopen("man.txt", "ab+");//´ò¿ª¶©Æ±¿Í»§ÐÅÏ¢µÄÎÄ¼þ
+	fp2 = fopen("man.txt", "ab+");//æ‰“å¼€è®¢ç¥¨å®¢æˆ·ä¿¡æ¯çš„æ–‡ä»¶
 	if (fp2 == NULL)
 	{
 		printf("can't open this file!\n");
@@ -152,11 +152,11 @@ int main()
 		system("cls");
 		menu();
 		printf("\tplease choose (0-6):   ");
-		scanf("%d", &sel);//ÊäÈëÑ¡Ôñ
+		scanf("%d", &sel);//è¾“å…¥é€‰æ‹©
 		system("cls");
 		if (sel == 0)
 		{
-			if (saveflag == 1)//µ±ÍË³öÊ±ÅÐ¶ÏÐÅÏ¢ÊÇ·ñ±£´æ
+			if (saveflag == 1)//å½“é€€å‡ºæ—¶åˆ¤æ–­ä¿¡æ¯æ˜¯å¦ä¿å­˜
 			{
 				getchar();
 				printf("\nthe file have been chagned!do you want to save it(y/n)?\n");
@@ -171,26 +171,26 @@ int main()
 			Sleep(1000);
 			exit(0);
 		}
-		switch (sel)//ÊäÈë²»Í¬µÄÖµÑ¡Ôñ¶ÔÓ¦µÄ²Ù×÷
+		switch (sel)//è¾“å…¥ä¸åŒçš„å€¼é€‰æ‹©å¯¹åº”çš„æ“ä½œ
 		{
 		case 1:
-			TrainInfo(trainHeader);//´æÈë»ð³µÆ±ÐÅÏ¢
+			TrainInfo(trainHeader);//å­˜å…¥ç«è½¦ç¥¨ä¿¡æ¯
 			break;
 		case 2:
-			searchtrain(trainHeader);//²éÕÒ»ð³µÆ±ÐÅÏ¢
+			searchtrain(trainHeader);//æŸ¥æ‰¾ç«è½¦ç¥¨ä¿¡æ¯
 			break;
 		case 3:
-			Bookticket(trainHeader, bookHeader);//¶©»ð³µÆ±
+			Bookticket(trainHeader, bookHeader);//è®¢ç«è½¦ç¥¨
 			break;
 		case 4:
-			Modify(trainHeader);//ÐÞ¸Ä»ð³µÆ±ÐÅÏ¢
+			Modify(trainHeader);//ä¿®æ”¹ç«è½¦ç¥¨ä¿¡æ¯
 			break;
 		case 5:
-			showTrain(trainHeader);//Õ¹Ê¾»ð³µÆ±
+			showTrain(trainHeader);//å±•ç¤ºç«è½¦ç¥¨
 			break;
 		case 6:
-			SaveTrainInfo(trainHeader);//±£´æ»ð³µÆ±ÐÅÏ¢
-			SaveBookInfo(bookHeader);//±£´æ¶©Æ±ÐÅÏ¢
+			SaveTrainInfo(trainHeader);//ä¿å­˜ç«è½¦ç¥¨ä¿¡æ¯
+			SaveBookInfo(bookHeader);//ä¿å­˜è®¢ç¥¨ä¿¡æ¯
 			break;
 		case 0:
 			return 0;
@@ -220,53 +220,53 @@ void TrainInfo(TrainLink trainHeader)
 {
 	TrainLink p, r, s;
 	char num[10];
-	r = trainHeader;//Í·½áµã
-	s = trainHeader->next;//µÚÒ»¸ö½áµã
+	r = trainHeader;//å¤´ç»“ç‚¹
+	s = trainHeader->next;//ç¬¬ä¸€ä¸ªç»“ç‚¹
 
 	while (r->next != NULL)
 	{
 		r = r->next;
-	}	//rÎªÎ²½Úµã
+	}	//rä¸ºå°¾èŠ‚ç‚¹
 
 	while (1)
 	{
-		printf("please input the number of the train(0-return)");//0³µºÅ£¬·µ»ØÖ÷½çÃæ
+		printf("please input the number of the train(0-return)");//0è½¦å·ï¼Œè¿”å›žä¸»ç•Œé¢
 		scanf("%s", num);
 		if (strcmp(num, "0") == 0)
 		{
 			break;
 		}
-		while (s)//±È½Ï³µºÅ
+		while (s)//æ¯”è¾ƒè½¦å·
 		{
-			if (strcmp(s->data.num, num) == 0)//³µºÅ´æÔÚ
+			if (strcmp(s->data.num, num) == 0)//è½¦å·å­˜åœ¨
 			{
 				printf("the train '%s' is existing!\n", num);
 				return;
 			}
 			s = s->next;
 		}
-		p = (TrainNode*)malloc(sizeof(TrainNode));//´´½¨ÐÂ½áµã
+		p = (TrainNode*)malloc(sizeof(TrainNode));//åˆ›å»ºæ–°ç»“ç‚¹
 		if (p == NULL)
 		{
-			printf("Memory allocation error!\n");//·ÖÅäÊ§°Ü
+			printf("Memory allocation error!\n");//åˆ†é…å¤±è´¥
 			exit(1);
 		}
-		strcpy(p->data.num, num);//¸´ÖÆ³µºÅ
-		printf("Input the city where the train will start:");//ÊäÈë³ö·¢³ÇÊÐ
+		strcpy(p->data.num, num);//å¤åˆ¶è½¦å·
+		printf("Input the city where the train will start:");//è¾“å…¥å‡ºå‘åŸŽå¸‚
 		scanf("%s", p->data.startcity);
-		printf("Input the city where the train will reach:");//ÊäÈëµ½´ï³ÇÊÐ
+		printf("Input the city where the train will reach:");//è¾“å…¥åˆ°è¾¾åŸŽå¸‚
 		scanf("%s", p->data.reachcity);
-		printf("Input the time which the train take off:");//ÊäÈëµ½´ïÊ±¼ä
+		printf("Input the time which the train take off:");//è¾“å…¥åˆ°è¾¾æ—¶é—´
 		scanf("%s", p->data.takeofftime);
-		printf("Input the time which the train receive:");//ÊäÈëµ½´ïÊ±¼ä
+		printf("Input the time which the train receive:");//è¾“å…¥åˆ°è¾¾æ—¶é—´
 		scanf("%s", p->data.receivetime);
-		printf("Input the price of ticket:");//ÊäÈë»ð³µÆ±¼Û
+		printf("Input the price of ticket:");//è¾“å…¥ç«è½¦ç¥¨ä»·
 		scanf("%d", &p->data.price);
-		printf("Input the number of booked tickets:");//ÊäÈëÔ¤¶©Æ±Êý
+		printf("Input the number of booked tickets:");//è¾“å…¥é¢„è®¢ç¥¨æ•°
 		scanf("%d", &p->data.ticketnum);
-		p->next = NULL;//ÐÂ½áµãÖ¸ÏòNULL
-		r->next = p;//Î²½áµãÖ¸ÏòÐÂ½áµã
-		r = p;//¸üÐÂÎ²½áµã
+		p->next = NULL;//æ–°ç»“ç‚¹æŒ‡å‘NULL
+		r->next = p;//å°¾ç»“ç‚¹æŒ‡å‘æ–°ç»“ç‚¹
+		r = p;//æ›´æ–°å°¾ç»“ç‚¹
 		saveflag = 1;
 	}
 }
@@ -285,17 +285,17 @@ void searchtrain(TrainLink trainHeader)
 		return;
 	}
 	printf("Choose the way:\n\n1:according to the number of train;\n2:according to the city:\n");
-	scanf("%d", &sel);//ÊäÈëÑ¡ÔñÐÅºÅ
+	scanf("%d", &sel);//è¾“å…¥é€‰æ‹©ä¿¡å·
 	if (sel == 1)
 	{
-		printf("Input the number of train you want:");//³µºÅ²éÑ¯
+		printf("Input the number of train you want:");//è½¦å·æŸ¥è¯¢
 		scanf("%s", str1);
 		r = trainHeader->next;
 		while (r != NULL)
 		{
 			if (strcmp(str1, r->data.num) == 0)
 			{
-				s[i++] = r;//´æÈë¼ÇÂ¼
+				s[i++] = r;//å­˜å…¥è®°å½•
 				break;
 			}
 			else
@@ -306,29 +306,29 @@ void searchtrain(TrainLink trainHeader)
 	}
 	else if (sel == 2)
 	{
-		printf("Input the city you want:");//Ä¿µÄ³ÇÊÐ²éÑ¯
+		printf("Input the city you want:");//ç›®çš„åŸŽå¸‚æŸ¥è¯¢
 		scanf("%s", str2);
 		r = trainHeader->next;
 		while (r != NULL)
 		{
 			if (strcmp(str2, r->data.reachcity) == 0)
 			{
-				s[i++] = r;//´æÈë¼ÇÂ¼
+				s[i++] = r;//å­˜å…¥è®°å½•
 			}
 			r = r->next;
 		}
 	}
 	if (i == 0)
 	{
-		puts("can not find!");//Ã»ÓÐÏàÓ¦¼ÇÂ¼
+		puts("can not find!");//æ²¡æœ‰ç›¸åº”è®°å½•
 		return;
 	}
 	else
 	{
-		printHeader();//Êä³ö±íÍ·
+		printHeader();//è¾“å‡ºè¡¨å¤´
 		for (k = 0; k < i; ++k)
 		{
-			printData(s[k]);//Êä³ö»ð³µÐÅÏ¢
+			printData(s[k]);//è¾“å‡ºç«è½¦ä¿¡æ¯
 		}
 	}
 }
@@ -353,7 +353,7 @@ void SaveTrainInfo(TrainLink trainHeader)
 	FILE* fp;
 	TrainLink p;
 	int count = 0, flag = 1;
-	fp = fopen("train.txt", "wb");//´ò¿ªÖ»Ð´¶þ½øÖÆÎÄ¼þ
+	fp = fopen("train.txt", "wb");//æ‰“å¼€åªå†™äºŒè¿›åˆ¶æ–‡ä»¶
 	if (fp == NULL)
 	{
 		printf("the file can't be opened!");
@@ -362,7 +362,7 @@ void SaveTrainInfo(TrainLink trainHeader)
 	p = trainHeader->next;
 	while (p)
 	{
-		if (fwrite(p, sizeof(TrainNode), 1, fp) == 1)//Ïò´ÅÅÌÎÄ¼þÐ´ÈëÊý¾Ý¿é
+		if (fwrite(p, sizeof(TrainNode), 1, fp) == 1)//å‘ç£ç›˜æ–‡ä»¶å†™å…¥æ•°æ®å—
 		{
 			p = p->next;
 			count++;
@@ -430,13 +430,13 @@ void Bookticket(TrainLink trainHeader, BookLink bookHeader)
 		q = q->next;
 	}
 	printf("Input the city you want to go:");
-	scanf("%s", &str);//ÊäÈëÒªµ½´ïµÄ³ÇÊÐ
+	scanf("%s", &str);//è¾“å…¥è¦åˆ°è¾¾çš„åŸŽå¸‚
 	p = trainHeader->next;
-	while (p != NULL)//±éÀúpÖ¸Õë
+	while (p != NULL)//éåŽ†pæŒ‡é’ˆ
 	{
-		if (strcmp(p->data.reachcity, str) == 0)//¼ì²éÊÇ·ñÆ¥Åä
+		if (strcmp(p->data.reachcity, str) == 0)//æ£€æŸ¥æ˜¯å¦åŒ¹é…
 		{
-			r[i++] = p;//¼ÇÂ¼´æÓÚÊý×ér
+			r[i++] = p;//è®°å½•å­˜äºŽæ•°ç»„r
 		}
 		p = p->next;
 	}
@@ -480,7 +480,7 @@ void Bookticket(TrainLink trainHeader, BookLink bookHeader)
 						Sleep(2000);
 						return;
 					}
-					printf("remain %d tickets\n", r[t]->data.ticketnum);//ÏÔÊ¾Ê£Óà»ð³µÆ±
+					printf("remain %d tickets\n", r[t]->data.ticketnum);//æ˜¾ç¤ºå‰©ä½™ç«è½¦ç¥¨
 					flag = 1;
 					break;
 				}
@@ -492,8 +492,8 @@ void Bookticket(TrainLink trainHeader, BookLink bookHeader)
 				return;
 			}
 			printf("Input your bookNum:");
-			scanf("%d", &dnum);//ÊäÈëÐèÒªÔ¤¶©µÄÆ±Êý
-			r[t]->data.ticketnum = r[t]->data.ticketnum - dnum;//¸üÐÂ»ð³µÆ±
+			scanf("%d", &dnum);//è¾“å…¥éœ€è¦é¢„è®¢çš„ç¥¨æ•°
+			r[t]->data.ticketnum = r[t]->data.ticketnum - dnum;//æ›´æ–°ç«è½¦ç¥¨
 			h->data.bookNum = dnum;
 			h->next = NULL;
 			q->next = h;
